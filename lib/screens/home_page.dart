@@ -40,7 +40,7 @@ class _HomeState extends State<Home> {
   double descriptionWidth = 200;
   double topHeading = 450;
 
-  Future<void> saveAsPdf() async {
+  Future<void> saveAsPdf(String fileName) async {
     showCupertinoModalPopup(
       context: context,
       builder: (context) => const Scaffold(
@@ -50,7 +50,9 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
-    final Uint8List fontData = File('Nirmala.ttf').readAsBytesSync();
+    final Uint8List fontData =
+        File('extra file/NotoSansBengali-VariableFont_wdth,wght.ttf')
+            .readAsBytesSync();
     final ttf = pw.Font.ttf(fontData.buffer.asByteData());
     double headingWidth = 80;
     double amaountWidth = 110;
@@ -144,7 +146,7 @@ class _HomeState extends State<Home> {
       );
     }
 
-    final element_of_pdf_deposite = pw.Column(
+    final elementOfPdfDeposite = pw.Column(
       children: [
         pw.Container(
           width: headingWidth + descriptionWidth + amaountWidth,
@@ -221,7 +223,7 @@ class _HomeState extends State<Home> {
       ],
     );
 
-    final element_of_pdf_cost = pw.Column(
+    final elementOfPdfCost = pw.Column(
       children: [
         pw.Container(
           width: headingWidth + descriptionWidth + amaountWidth,
@@ -302,11 +304,11 @@ class _HomeState extends State<Home> {
           return pw.Center(
             child: pw.Row(
               children: [
-                element_of_pdf_deposite,
+                elementOfPdfDeposite,
                 pw.SizedBox(
                   width: 15,
                 ),
-                element_of_pdf_cost
+                elementOfPdfCost
               ],
             ),
           );
@@ -314,7 +316,7 @@ class _HomeState extends State<Home> {
       ),
     );
 
-    final file = File("example.pdf");
+    final file = File("$fileName.pdf");
     await file.writeAsBytes(await pdf.save());
 
     Navigator.pop(context);
@@ -427,8 +429,74 @@ class _HomeState extends State<Home> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 96, 70, 31)),
-                onPressed: () async {
-                  saveAsPdf();
+                onPressed: () {
+                  final filenmeController = TextEditingController();
+                  showCupertinoModalPopup(
+                    context: context,
+                    builder: (context) => Scaffold(
+                      body: Center(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: Colors.white,
+                          ),
+                          width: 500,
+                          height: 180,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              TextFormField(
+                                autocorrect: false,
+                                autofocus: true,
+                                autovalidateMode: AutovalidateMode.always,
+                                controller: filenmeController,
+                                decoration: InputDecoration(
+                                  hintText: "Write the name of file.",
+                                  labelText: "File Name",
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(100),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return "Give a file name please";
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      if (filenmeController.text.isNotEmpty) {
+                                        saveAsPdf(filenmeController.text);
+                                        Navigator.pop(context);
+                                      }
+                                    },
+                                    child: const Text("Save"),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("Cancel"),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      backgroundColor: const Color.fromARGB(76, 0, 0, 0),
+                    ),
+                  );
                 },
                 child: Row(
                   children: const [
